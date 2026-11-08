@@ -1,9 +1,14 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 import { Logo } from "@/components/shared/Logo";
 import { MobileNav } from "@/components/shared/MobileNav";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import Link from "next/link";
+import { authClient, signOut, useSession } from "@/lib/auth-client";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -13,6 +18,9 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+
   return (
     <header className="px-3 pt-3 md:px-5 md:pt-5">
       <nav
@@ -38,20 +46,39 @@ export default function Navbar() {
           <span aria-hidden className="h-4 w-px bg-black/10 dark:bg-white/15" />
           <ThemeToggle />
 
-          <Link
-            href="/signin"
-            className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-white/60 dark:hover:text-white"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/signup"
-            className={cn(
-              "rounded-lg bg-[#5b5bd6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4b4bc0]",
-            )}
-          >
-            Get Started
-          </Link>
+          {isPending ? (
+            <h1>Loading...</h1>
+          ) : session?.user ? (
+            <>
+              <Button
+                variant={"outline"}
+                onClick={async () => {
+                  await signOut();
+                  router.refresh();
+                }}
+              >
+                Logout
+              </Button>
+              <p>Welcome!! {session?.user.name}</p>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/signin"
+                className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-white/60 dark:hover:text-white"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className={cn(
+                  "rounded-lg bg-[#5b5bd6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4b4bc0]",
+                )}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 md:hidden">

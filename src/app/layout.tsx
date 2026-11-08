@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/providers/ThemeProvider";
+import { Toaster } from "@/components/ui/toast"
+
 
 const manRope = Manrope({
   variable: "--font-manrope",
@@ -28,6 +30,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           disableTransitionOnChange
         >
           {children}
+
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

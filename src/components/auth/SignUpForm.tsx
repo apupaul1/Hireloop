@@ -23,8 +23,13 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import SocialSignIn from "./SocialSignIn";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
 
 const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -96,7 +101,38 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       return;
     }
 
-    console.log(formData);
+    if (
+      formData.role !== "seeker" &&
+      formData.role !== "recruiter" &&
+      formData.role !== "admin"
+    ) {
+      return;
+    }
+
+    const { data, error } = await authClient.signUp.email({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+      callbackURL: "/",
+    });
+
+
+    if (error) {
+      toast.add({
+        type: "error",
+        description: error.message || "Try again",
+      });
+
+      return;
+    }
+
+    toast.add({
+      type: "success",
+      description: "Account Created Successfull",
+    });
+    router.refresh();
+    router.push("/");
   };
 
   return (
@@ -183,7 +219,6 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
                       role: value,
                     }));
                   }}
-                  required
                 >
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value="seeker" id="r1" />

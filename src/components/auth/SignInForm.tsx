@@ -17,12 +17,14 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/toast";
+
 import Link from "next/link";
 import SocialSignIn from "./SocialSignIn";
 import { useState } from "react";
+import { signIn } from "@/lib/auth-client";
 
 const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
-  
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -84,7 +86,28 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       return;
     }
 
-    console.log(formData);
+    const { data, error } = await signIn.email({
+      email: formData.email,
+      password: formData.password,
+      rememberMe: true,
+      callbackURL: "/",
+    });
+
+    console.log({ data, error });
+
+    if (error) {
+      toast.add({
+        type: "error",
+        description: error.message || "Try again",
+      });
+
+      return;
+    }
+
+    toast.add({
+      type: "success",
+      description: "Login Successfull",
+    });
   };
 
   return (
