@@ -39,13 +39,13 @@ export default function Navbar() {
           <ThemeToggle />
 
           <Link
-            href="#"
+            href="/signin"
             className="text-sm text-neutral-500 transition-colors hover:text-neutral-900 dark:text-white/60 dark:hover:text-white"
           >
             Sign In
           </Link>
           <Link
-            href="#"
+            href="/signup"
             className={cn(
               "rounded-lg bg-[#5b5bd6] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4b4bc0]",
             )}

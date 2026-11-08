@@ -1,56 +1,11 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Inter,
-  Inter_Tight,
-  Manrope,
-  Plus_Jakarta_Sans,
-  Rethink_Sans,
-  Space_Mono,
-} from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/providers/ThemeProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const manRope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const interTight = Inter_Tight({
-  variable: "--font-inter-tight",
-  subsets: ["latin"],
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-});
-
-const rethink = Rethink_Sans({
-  variable: "--font-rethink",
-  subsets: ["latin"],
-});
-
-const spaceMono = Space_Mono({
-  variable: "--font-space-mono",
-  subsets: ["latin"],
-  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -62,7 +17,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${manRope.className} ${geistSans.variable} ${geistMono.variable} ${inter.variable} ${interTight.variable} ${jakarta.variable} ${rethink.variable} ${spaceMono.variable} h-full antialiased`}
+      className={`${manRope.className} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
