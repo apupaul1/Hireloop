@@ -10,16 +10,18 @@ import { authClient, signOut, useSession } from "@/lib/auth-client";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
-const NAV_LINKS = [
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Company", href: "/company" },
-  { label: "Pricing", href: "/pricing" },
-  { label: "Dashboard", href: "/dashboard" },
-];
-
 export default function Navbar() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+
+  const NAV_LINKS = [
+    { label: "Browse Jobs", href: "/jobs" },
+    { label: "Company", href: "/company" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Dashboard", href: `/dashboard/${session?.user.role || 'seeker'}` },
+  ];
+
+  console.log(session);
 
   return (
     <header className="px-3 pt-3 md:px-5 md:pt-5">
