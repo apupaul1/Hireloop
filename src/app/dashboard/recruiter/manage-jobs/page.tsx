@@ -16,7 +16,7 @@ const ManageJobsPage = async () => {
   const jobs = await getJobs();
 
   return (
-    <div className="w-full pb-10">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden pb-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList className="gap-1.5 text-[11px] text-white/30">
           <BreadcrumbItem>

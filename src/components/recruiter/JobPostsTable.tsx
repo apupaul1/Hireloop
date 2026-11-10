@@ -247,7 +247,7 @@ function JobTitleCell({ job }: { job: Job }) {
         <Icon aria-hidden className="size-4.5" strokeWidth={1.75} />
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[13px] font-semibold text-white">
+        <span className="block truncate text-[11px] font-semibold text-white">
           {job.title}
         </span>
         <span
@@ -332,7 +332,7 @@ export function JobPostsTable({ jobs }: { jobs: Job[] }) {
                     key={job._id}
                     className="border-b border-white/6 transition-colors last:border-0 hover:bg-white/2"
                   >
-                    <td className={cn(bodyCellClassName, "pl-5")}>
+                    <td className={cn(bodyCellClassName, "pl-2")}>
                       <JobTitleCell job={job} />
                     </td>
 
@@ -345,7 +345,7 @@ export function JobPostsTable({ jobs }: { jobs: Job[] }) {
                           aria-hidden
                           className="size-3 shrink-0 text-white/30"
                         />
-                        <span className="max-w-47.5 truncate">
+                        <span className="max-w-42.5 truncate">
                           {location || "Location not set"}
                         </span>
                       </span>

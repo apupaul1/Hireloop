@@ -15,7 +15,7 @@ export default function Navbar() {
   const router = useRouter();
 
   const NAV_LINKS = [
-    { label: "Browse Jobs", href: "/jobs" },
+    { label: "Browse Jobs", href: "/browse-jobs" },
     { label: "Company", href: "/company" },
     { label: "Pricing", href: "/pricing" },
     { label: "Dashboard", href: `/dashboard/${session?.user.role || 'seeker'}` },
