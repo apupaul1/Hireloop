@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CopyIcon,
   EllipsisVerticalIcon,
   EyeIcon,
   PencilIcon,
@@ -56,6 +55,10 @@ export function JobRowActions({ jobId, jobTitle }: JobRowActionsProps) {
     }
   };
 
+  const handleUpdate = (id: string) => {
+    router.push(`/dashboard/recruiter/manage-jobs/update-job?id=${id}`);
+  };
+
   const notify = (action: string) => {
     toast.add({
       type: "info",
@@ -69,13 +72,12 @@ export function JobRowActions({ jobId, jobTitle }: JobRowActionsProps) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => notify("Editing")}
+        onClick={() => handleUpdate(jobId)}
         className="h-8 gap-1.5 rounded-lg border-[#5b5bd6]/40 bg-[#5b5bd6]/10 px-2.5 text-[11px] font-medium text-[#b4b4ff] shadow-none hover:border-[#5b5bd6]/60 hover:bg-[#5b5bd6]/20 hover:text-white active:translate-y-0"
       >
         <PencilIcon className="size-3.5" />
         Update
       </Button>
-
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger
           render={
@@ -132,7 +134,7 @@ export function JobRowActions({ jobId, jobTitle }: JobRowActionsProps) {
             View details
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => notify("Editing")}
+            onClick={() => handleUpdate(jobId)}
             className="gap-2 py-1.5 focus:bg-white/6 focus:text-white"
           >
             <PencilIcon className="size-4 text-white/45" />

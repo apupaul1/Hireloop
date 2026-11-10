@@ -31,3 +31,13 @@ export const getJobs = async (): Promise<Job[]> => {
 
   return res.json();
 };
+
+export const getSingleJob = async (id: string): Promise<Job | null> => {
+  const res = await fetch(`${BASE_URL}/jobs/${id}`, { cache: "no-store" });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  return res.json();
+};

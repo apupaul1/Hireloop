@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Building2,
@@ -8,6 +9,7 @@ import {
   ChevronDown,
   Euro,
   Globe2,
+  Loader2,
   MapPin,
 } from "lucide-react";
 import { cn } from "cn";
@@ -18,7 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
-import { postJob } from "@/lib/actions/jobs";
+import { postJob, updateJob } from "@/lib/actions/jobs";
+import type { Job } from "@/lib/api/jobs";
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
 type JobType = (typeof JOB_TYPES)[number];
@@ -68,6 +71,25 @@ const initialValues: JobFormValues = {
   responsibilities: "",
   qualifications: "",
 };
+
+const valuesFromJob = (job: Job): JobFormValues => ({
+  title: job.title ?? "",
+  company: job.company ?? "",
+  category: job.category ?? "",
+  jobType: JOB_TYPES.includes(job.jobType as JobType)
+    ? (job.jobType as JobType)
+    : "Full-time",
+  isRemote: Boolean(job.isRemote),
+  location: job.location ?? "",
+  deadline: job.deadline?.slice(0, 10) ?? "",
+  minSalary: job.minSalary ?? "",
+  maxSalary: job.maxSalary ?? "",
+  frequency: FREQUENCIES.includes(job.frequency as Frequency)
+    ? (job.frequency as Frequency)
+    : "per hour",
+  responsibilities: job.responsibilities ?? "",
+  qualifications: job.qualifications ?? "",
+});
 
 const fieldClassName =
   "h-11 rounded-xl border-white/8 bg-[#15151a] px-3.5 text-sm text-white shadow-none outline-none transition-colors placeholder:text-white/30 focus-visible:border-[#5b5bd6]/70 focus-visible:ring-3 focus-visible:ring-[#5b5bd6]/20 dark:bg-[#15151a] dark:focus-visible:border-[#5b5bd6]/70";
@@ -161,9 +183,18 @@ function validateJobPost(values: JobFormValues): JobFormErrors {
   return errors;
 }
 
-export default function JobPostForm() {
-  const [values, setValues] = useState<JobFormValues>(initialValues);
+type JobPostFormProps = {
+  job?: Job;
+};
+
+export default function JobPostForm({ job }: JobPostFormProps) {
+  const router = useRouter();
+  const isEdit = Boolean(job);
+  const [values, setValues] = useState<JobFormValues>(() =>
+    job ? valuesFromJob(job) : initialValues,
+  );
   const [errors, setErrors] = useState<JobFormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setField = <K extends keyof JobFormValues>(
     name: K,
@@ -197,21 +228,48 @@ export default function JobPostForm() {
 
       toast.add({
         type: "error",
-        description: "Please fix the highlighted fields before publishing.",
+        description: isEdit
+          ? "Please fix the highlighted fields before saving."
+          : "Please fix the highlighted fields before publishing.",
       });
 
       return;
     }
 
-    const data = await postJob(values);
+    setIsSubmitting(true);
 
-    if (data.insertedId) {
-      toast.add({
-        type: "success",
-        description: "Job published successfully.",
-      });
-      setValues(initialValues);
-      setErrors({});
+    try {
+      if (job) {
+        const result = await updateJob(job._id, values);
+
+        if (!result.ok) {
+          toast.add({
+            type: "error",
+            description: "Could not update this job. Please try again.",
+          });
+          return;
+        }
+
+        toast.add({
+          type: "success",
+          description: "Job updated successfully.",
+        });
+        router.push("/dashboard/recruiter/manage-jobs");
+        return;
+      }
+
+      const data = await postJob(values);
+
+      if (data.insertedId) {
+        toast.add({
+          type: "success",
+          description: "Job published successfully.",
+        });
+        setValues(initialValues);
+        setErrors({});
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -353,7 +411,7 @@ export default function JobPostForm() {
             </span>
             <span>
               <span className="block text-sm font-medium text-white">
-                Remote Work Allowed
+                Remote Work Allowed{isEdit ? " (isRemote)" : ""}
               </span>
               <span className="mt-0.5 block text-xs leading-relaxed text-white/40">
                 Enable worldwide or distributed candidate applications
@@ -371,7 +429,7 @@ export default function JobPostForm() {
         <div className="grid gap-5 md:grid-cols-2">
           <Field data-invalid={!!errors.location}>
             <FieldLabel htmlFor="job-location">
-              Job Location <RequiredMark />
+              Job Location{isEdit ? " (location)" : ""} <RequiredMark />
             </FieldLabel>
             <div className="relative">
               <MapPin
@@ -399,7 +457,8 @@ export default function JobPostForm() {
 
           <Field data-invalid={!!errors.deadline}>
             <FieldLabel htmlFor="job-deadline">
-              Application Deadline <RequiredMark />
+              Application Deadline{isEdit ? " (deadline)" : ""}{" "}
+              <RequiredMark />
             </FieldLabel>
             <div className="relative">
               <CalendarDays
@@ -560,16 +619,29 @@ export default function JobPostForm() {
         </Field>
       </section>
 
-      <div className="flex flex-col-reverse gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-white/35">
-          Fields marked <span className="text-[#8b8bf5]">*</span> are required.
-        </p>
+      <div
+        className={cn(
+          "flex flex-col-reverse gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center",
+          isEdit ? "sm:justify-start" : "sm:justify-between",
+        )}
+      >
+        {isEdit ? null : (
+          <p className="text-xs text-white/35">
+            Fields marked <span className="text-[#8b8bf5]">*</span> are
+            required.
+          </p>
+        )}
         <Button
           type="submit"
+          disabled={isSubmitting}
           className="h-11 w-full rounded-xl bg-[#5b5bd6] px-6 text-sm font-medium text-white shadow-[0_8px_24px_-8px_rgba(91,91,214,0.8)] hover:bg-[#4b4bc0] sm:w-auto"
         >
-          Publish Job
-          <ArrowRight aria-hidden className="size-4" />
+          {isEdit ? "Update Job" : "Publish Job"}
+          {isSubmitting ? (
+            <Loader2 aria-hidden className="size-4 animate-spin" />
+          ) : (
+            <ArrowRight aria-hidden className="size-4" />
+          )}
         </Button>
       </div>
     </form>
