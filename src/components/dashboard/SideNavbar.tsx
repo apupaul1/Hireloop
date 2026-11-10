@@ -14,55 +14,143 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  TerminalSquareIcon,
-  BotIcon,
-  BookOpenIcon,
+  BookmarkIcon,
+  BriefcaseBusinessIcon,
+  BriefcaseIcon,
+  Building2Icon,
+  CreditCardIcon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  LogOut,
   Settings2Icon,
+  UsersIcon,
+  WalletIcon,
+  type LucideIcon,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "../shared/Logo";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
+import { Button } from "../ui/button";
+import { toast } from "../ui/toast";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
+type Role = "seeker" | "recruiter" | "admin";
+
+type NavItem = {
+  title: string;
+  url: string;
+  icon: LucideIcon;
+  exact?: boolean;
+};
+
+const navByRole: Record<Role, NavItem[]> = {
+  seeker: [
     {
-      title: "Playground",
-      url: "#",
-      icon: <TerminalSquareIcon />,
-      isActive: true,
+      title: "Dashboard",
+      url: "/dashboard/seeker",
+      icon: LayoutDashboardIcon,
+      exact: true,
     },
     {
-      title: "Models",
-      url: "#",
-      icon: <BotIcon />,
+      title: "Jobs",
+      url: "/dashboard/seeker/jobs",
+      icon: BriefcaseIcon,
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: <BookOpenIcon />,
+      title: "Saved Jobs",
+      url: "/dashboard/seeker/saved-jobs",
+      icon: BookmarkIcon,
+    },
+    {
+      title: "Applications",
+      url: "/dashboard/seeker/applications",
+      icon: FileTextIcon,
+    },
+    {
+      title: "Billing",
+      url: "/dashboard/seeker/billing",
+      icon: CreditCardIcon,
     },
     {
       title: "Settings",
-      url: "#",
-      icon: <Settings2Icon />,
+      url: "/dashboard/seeker/settings",
+      icon: Settings2Icon,
+    },
+  ],
+  recruiter: [
+    {
+      title: "Dashboard",
+      url: "/dashboard/recruiter",
+      icon: LayoutDashboardIcon,
+      exact: true,
+    },
+    {
+      title: "Manage Jobs",
+      url: "/dashboard/recruiter/manage-jobs",
+      icon: BriefcaseBusinessIcon,
+    },
+    {
+      title: "Applications",
+      url: "/dashboard/recruiter/applications",
+      icon: FileTextIcon,
+    },
+    {
+      title: "Settings",
+      url: "/dashboard/recruiter/settings",
+      icon: Settings2Icon,
+    },
+  ],
+  admin: [
+    {
+      title: "Dashboard",
+      url: "/dashboard/admin",
+      icon: LayoutDashboardIcon,
+      exact: true,
+    },
+    {
+      title: "Users",
+      url: "/dashboard/admin/users",
+      icon: UsersIcon,
+    },
+    {
+      title: "Companies",
+      url: "/dashboard/admin/companies",
+      icon: Building2Icon,
+    },
+    {
+      title: "Jobs",
+      url: "/dashboard/admin/jobs",
+      icon: BriefcaseIcon,
+    },
+    {
+      title: "Payments",
+      url: "/dashboard/admin/payments",
+      icon: WalletIcon,
+    },
+    {
+      title: "Settings",
+      url: "/dashboard/admin/settings",
+      icon: Settings2Icon,
     },
   ],
 };
 
-// 08080A
+const isNavItemActive = (pathname: string, item: NavItem) =>
+  item.exact
+    ? pathname === item.url
+    : pathname === item.url || pathname.startsWith(`${item.url}/`);
 
 export function SideNavbar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
+  const role = (session?.user.role as Role | undefined) ?? "seeker";
+  const navItems = navByRole[role] ?? navByRole.seeker;
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar className="border-none" collapsible="icon" {...props}>
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
@@ -80,22 +168,35 @@ export function SideNavbar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   }
                 >
                   <Avatar>
-                    <AvatarImage src={session?.user.image || ""} alt={session?.user.name} />
-                    <AvatarFallback>{session?.user.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage
+                      src={session?.user.image || ""}
+                      alt={session?.user.name}
+                    />
+                    <AvatarFallback>
+                      {session?.user.name.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{session?.user.name}</span>
-                    <span className="truncate text-xs capitalize">{session?.user.role}</span>
+                    <span className="truncate font-medium">
+                      {session?.user.name}
+                    </span>
+                    <span className="truncate text-xs capitalize">
+                      {session?.user.role}
+                    </span>
                   </div>
                 </DropdownMenuTrigger>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
           <SidebarMenu>
-            {data.navMain.map((item) => (
+            {isPending? <h1>Loading...</h1> : navItems.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon}
+                <SidebarMenuButton
+                  render={<Link href={item.url} />}
+                  tooltip={item.title}
+                  isActive={isNavItemActive(pathname, item)}
+                >
+                  <item.icon />
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -104,7 +205,20 @@ export function SideNavbar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <button>Logout</button>
+        <Button
+          onClick={async () => {
+            await signOut();
+            toast.add({
+              type: "success",
+              description: "Logout Successfull",
+            });
+            router.refresh();
+            router.push("/");
+          }}
+        >
+          <LogOut />
+          Logout
+        </Button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

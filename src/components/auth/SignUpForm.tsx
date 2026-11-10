@@ -12,9 +12,11 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
+  FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -27,10 +29,17 @@ import { authClient } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 
+type UserRole = "seeker" | "recruiter" | "admin";
+
 const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+  }>({
     name: "",
     email: "",
     password: "",
@@ -41,21 +50,24 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     name: "",
     email: "",
     password: "",
+    role: "",
   });
 
   const validateField = (name: string, value: string) => {
     let error = "";
 
     if (name === "name") {
-      if (!value) {
+      if (!value.trim()) {
         error = "Name is required";
+      } else if (value.trim().length < 2) {
+        error = "Name must be at least 2 characters";
       }
     }
 
     if (name === "email") {
       if (!value.trim()) {
         error = "Email is required";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
         error = "Please enter a valid email address";
       }
     }
@@ -63,8 +75,14 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     if (name === "password") {
       if (!value) {
         error = "Password is required";
-      } else if (value.length < 6) {
-        error = "Password must be at least 6 characters";
+      } else if (value.length < 8) {
+        error = "Password must be at least 8 characters";
+      }
+    }
+
+    if (name === "role") {
+      if (!["seeker", "recruiter", "admin"].includes(value)) {
+        error = "Select an account type";
       }
     }
 
@@ -93,6 +111,7 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       name: validateField("name", formData.name),
       email: validateField("email", formData.email),
       password: validateField("password", formData.password),
+      role: validateField("role", formData.role),
     };
 
     setErrors(newErrors);
@@ -101,22 +120,13 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       return;
     }
 
-    if (
-      formData.role !== "seeker" &&
-      formData.role !== "recruiter" &&
-      formData.role !== "admin"
-    ) {
-      return;
-    }
-
-    const { data, error } = await authClient.signUp.email({
-      name: formData.name,
-      email: formData.email,
+    const { error } = await authClient.signUp.email({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
       password: formData.password,
       role: formData.role,
       callbackURL: "/",
     });
-
 
     if (error) {
       toast.add({
@@ -146,79 +156,84 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSignup}>
+          <form onSubmit={handleSignup} noValidate>
             <FieldGroup>
-              <Field>
+              <Field data-invalid={!!errors.name}>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
                 <Input
                   id="name"
                   name="name"
                   type="text"
+                  autoComplete="name"
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={handleChange}
                   aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
+                  required
                 />
-                {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name}</p>
-                )}
+                <FieldError id="name-error">{errors.name}</FieldError>
               </Field>
 
-              <Field>
+              <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
                   name="email"
+                  autoComplete="email"
                   placeholder="m@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  required
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
+                <FieldError id="email-error">{errors.email}</FieldError>
+              </Field>
+
+              <Field data-invalid={!!errors.password}>
+                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <Input
+                  name="password"
+                  id="password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  aria-invalid={!!errors.password}
+                  aria-describedby={
+                    errors.password ? "password-error" : "password-description"
+                  }
+                  required
+                />
+                {errors.password ? (
+                  <FieldError id="password-error">{errors.password}</FieldError>
+                ) : (
+                  <FieldDescription id="password-description">
+                    Must be at least 8 characters long.
+                  </FieldDescription>
                 )}
               </Field>
 
-              <Field>
-                <Field>
-                  <Field>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input
-                      name="password"
-                      id="password"
-                      type="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      aria-invalid={!!errors.password}
-                    />
-                    {errors.password && (
-                      <p className="text-sm text-destructive">
-                        {errors.password}
-                      </p>
-                    )}
-                  </Field>
-                </Field>
-                <FieldDescription>
-                  Must be at least 8 characters long.
-                </FieldDescription>
-              </Field>
+              <Field data-invalid={!!errors.role}>
+                <FieldTitle id="account-label">Account Type</FieldTitle>
 
-              <Field>
-                <FieldLabel htmlFor="acc">Account Type</FieldLabel>
-
-                <RadioGroup
-                  defaultValue="seeker"
+                <RadioGroup<UserRole>
                   className="grid grid-cols-3"
                   name="role"
-                  id="acc"
                   value={formData.role}
                   onValueChange={(value) => {
                     setFormData((prev) => ({
                       ...prev,
                       role: value,
                     }));
+
+                    setErrors((prev) => ({ ...prev, role: "" }));
                   }}
+                  aria-labelledby="account-label"
+                  aria-invalid={!!errors.role}
+                  aria-describedby={errors.role ? "role-error" : undefined}
                 >
                   <div className="flex items-center gap-3">
                     <RadioGroupItem value="seeker" id="r1" />
@@ -233,6 +248,7 @@ const SignUpForm = ({ className, ...props }: React.ComponentProps<"div">) => {
                     <Label htmlFor="r3">Admin</Label>
                   </div>
                 </RadioGroup>
+                <FieldError id="role-error">{errors.role}</FieldError>
               </Field>
 
               <Field>

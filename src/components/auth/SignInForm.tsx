@@ -12,6 +12,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -41,7 +42,7 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     if (name === "email") {
       if (!value.trim()) {
         error = "Email is required";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
         error = "Please enter a valid email address";
       }
     }
@@ -49,8 +50,6 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
     if (name === "password") {
       if (!value) {
         error = "Password is required";
-      } else if (value.length < 6) {
-        error = "Password must be at least 6 characters";
       }
     }
 
@@ -86,14 +85,12 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
       return;
     }
 
-    const { data, error } = await signIn.email({
-      email: formData.email,
+    const { error } = await signIn.email({
+      email: formData.email.trim(),
       password: formData.password,
       rememberMe: true,
       callbackURL: "/",
     });
-
-    console.log({ data, error });
 
     if (error) {
       toast.add({
@@ -120,25 +117,26 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSignin}>
+          <form onSubmit={handleSignin} noValidate>
             <FieldGroup>
-              <Field>
+              <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
                   name="email"
+                  autoComplete="email"
                   placeholder="m@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  required
                 />
 
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
-                )}
+                <FieldError id="email-error">{errors.email}</FieldError>
               </Field>
-              <Field>
+              <Field data-invalid={!!errors.password}>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
@@ -152,13 +150,16 @@ const SignInForm = ({ className, ...props }: React.ComponentProps<"div">) => {
                   id="password"
                   type="password"
                   name="password"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
                   aria-invalid={!!errors.password}
+                  aria-describedby={
+                    errors.password ? "password-error" : undefined
+                  }
+                  required
                 />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
+                <FieldError id="password-error">{errors.password}</FieldError>
               </Field>
               <Field>
                 <Button type="submit">Login</Button>

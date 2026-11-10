@@ -25,9 +25,9 @@ const DashboardLayout = ({ children }: LayoutProps<"/">) => {
     <div>
       <SidebarProvider>
         <SideNavbar />
-        <SidebarInset className="bg-[#0C0C0F] mr-3 my-2">
+        <SidebarInset className="bg-[#0E0E11] mr-3 my-2">
           <header className="flex justify-between h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border rounded-t-2xl pr-6">
-            <div className="flex flex-1 items-center gap-2 px-4 w-full py-3">
+            <div className="flex flex-1 items-center gap-2 pl-8 px-4 w-full py-3">
               <SidebarTrigger className="-ml-1" />
               <Separator
                 orientation="vertical"
@@ -45,7 +45,7 @@ const DashboardLayout = ({ children }: LayoutProps<"/">) => {
               <MessageCircle size="20"/>
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 border-l border-r">
+          <div className="flex flex-1 flex-col gap-4 p-8 border-l border-r">
             {children}
           </div>
         </SidebarInset>
