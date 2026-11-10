@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "cn";
 
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useRouter } from "next/navigation";
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
 
@@ -101,11 +102,35 @@ export default function JobFilters({ counts }: { counts: FilterCounts }) {
   const [category, setCategory] = useState("");
   const [workMode, setWorkMode] = useState("");
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (jobType) params.set("jobType", jobType);
+    if (category) params.set("category", category);
+    if (workMode) params.set("isRemote", workMode);
+
+    router.push(`/browse-jobs?${params.toString()}`);
+  }, [jobType, category, workMode, router]);
+
+  const handleReset = () => {
+    router.push("/browse-jobs");
+  };
+
   return (
     <Card className="h-fit gap-0 rounded-xl border border-black/8 bg-white p-5 ring-0 dark:border-white/6 dark:bg-[#0e0e0e]">
-      <h2 className="text-base font-semibold tracking-tight text-neutral-900 dark:text-white">
-        Filters
-      </h2>
+      <div className="flex justify-between">
+        <h2 className="text-base font-semibold tracking-tight text-neutral-900 dark:text-white">
+          Filters
+        </h2>
+        <h2
+          onClick={handleReset}
+          className="text-base font-semibold tracking-tight text-neutral-900 dark:text-white cursor-pointer"
+        >
+          Reset
+        </h2>
+      </div>
 
       <div className="mt-5 space-y-5">
         <FilterGroup id="filter-job-type" title="Job Type">

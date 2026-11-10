@@ -20,10 +20,14 @@ export type Job = {
   applicants?: number;
   /** Optional until the API reports a listing status. */
   status?: "active" | "expired" | "draft" | "paused";
+  /** Optional until the API reports the required experience. */
+  experience?: string;
+  /** Optional until the API reports the company size. */
+  companySize?: string;
 };
 
-export const getJobs = async (): Promise<Job[]> => {
-  const res = await fetch(`${BASE_URL}/jobs`, { cache: "no-store" });
+export const getJobs = async (query: string = ""): Promise<Job[]> => {
+  const res = await fetch(`${BASE_URL}/jobs?${query}`, { cache: "no-store" });
 
   if (!res.ok) {
     return [];
@@ -35,9 +39,16 @@ export const getJobs = async (): Promise<Job[]> => {
 export const getSingleJob = async (id: string): Promise<Job | null> => {
   const res = await fetch(`${BASE_URL}/jobs/${id}`, { cache: "no-store" });
 
-  if (!res.ok) {
+  if (res.ok) {
+    return res.json();
+  }
+
+  if (res.status !== 404) {
     return null;
   }
 
-  return res.json();
+  // Some deployments do not expose a single-job endpoint yet; fall back to
+  // looking the listing up in the collection response.
+  const jobs = await getJobs();
+  return jobs.find((job) => job._id === id) ?? null;
 };

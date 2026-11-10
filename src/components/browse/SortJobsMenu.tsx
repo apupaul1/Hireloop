@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,19 +11,28 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 const SORT_OPTIONS = [
   { value: "recent", label: "Most Recent" },
   { value: "oldest", label: "Oldest" },
-  { value: "salary-high", label: "Salary: High to Low" },
-  { value: "salary-low", label: "Salary: Low to High" },
+  { value: "salaryHigh", label: "Salary: High to Low" },
+  { value: "salaryLow", label: "Salary: Low to High" },
 ];
 
 export default function SortJobsMenu() {
   const [sort, setSort] = useState("recent");
+  const router = useRouter();
 
   const selected =
     SORT_OPTIONS.find((option) => option.value === sort) ?? SORT_OPTIONS[0];
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    params.set("sortBy", sort);
+    router.push(`/browse-jobs?${params.toString()}`);
+  }, [sort]);
 
   return (
     <div className="flex items-center gap-2">
@@ -52,6 +61,7 @@ export default function SortJobsMenu() {
                 key={option.value}
                 value={option.value}
                 className="text-[13px] focus:bg-black/5 dark:focus:bg-white/6 dark:focus:text-white"
+                closeOnClick
               >
                 {option.label}
               </DropdownMenuRadioItem>

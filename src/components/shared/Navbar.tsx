@@ -21,7 +21,7 @@ export default function Navbar() {
     { label: "Dashboard", href: `/dashboard/${session?.user.role || 'seeker'}` },
   ];
 
-  console.log(session);
+  // console.log(session);
 
   return (
     <header className="px-3 pt-3 md:px-5 md:pt-5">

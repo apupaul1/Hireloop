@@ -2,16 +2,11 @@ import { Briefcase, Search } from "lucide-react";
 
 import JobFilters, { type FilterCounts } from "@/components/browse/JobFilters";
 import JobListCard from "@/components/browse/JobListCard";
-import SortJobsMenu from "@/components/browse/SortJobsMenu";
 import Navbar from "@/components/shared/Navbar";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { getJobs, type Job } from "@/lib/api/jobs";
+import SearchBar from "@/components/browse/SearchBar";
+import SortJobsMenu from "@/components/browse/SortJobsMenu";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
@@ -42,43 +37,25 @@ function buildFilterCounts(jobs: Job[]): FilterCounts {
   };
 }
 
-const BrowseJobsPage = async () => {
-  const jobs = await getJobs();
-  const counts = buildFilterCounts(jobs);
+const BrowseJobsPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+  const search = await searchParams;
+  const query = new URLSearchParams(
+    search as Record<string, string>,
+  ).toString();
 
-  
+  const jobs = await getJobs(query);
+  const counts = buildFilterCounts(jobs);
 
   return (
     <div className="relative isolate min-h-svh bg-[#f5f5f7] text-neutral-900 dark:bg-[#050505] dark:text-white">
       <Navbar />
 
       <main className="mx-auto w-full max-w-7xl px-3 pt-5 pb-16 md:px-5">
-        <Card
-          aria-label="Job search"
-          className="gap-0 rounded-xl border border-black/8 bg-white p-2 ring-0 dark:border-white/6 dark:bg-[#0e0e0e]"
-        >
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <InputGroup className="h-11 flex-1 rounded-lg border-black/10 bg-transparent dark:border-white/8 dark:bg-transparent">
-              <InputGroupAddon className="pl-2.5 text-neutral-400 dark:text-white/35">
-                <Search aria-hidden />
-              </InputGroupAddon>
-              <InputGroupInput
-                type="search"
-                name="query"
-                aria-label="Search by job title, keywords, or company"
-                placeholder="Search by job title, keywords..."
-                className="text-sm placeholder:text-neutral-400 dark:placeholder:text-white/30"
-              />
-            </InputGroup>
-
-            <Button
-              type="button"
-              className="h-11 shrink-0 rounded-lg bg-neutral-900 px-6 text-sm font-semibold text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-white/90"
-            >
-              Search Jobs
-            </Button>
-          </div>
-        </Card>
+        <SearchBar />
 
         <div className="mt-5 grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-6">
           <JobFilters counts={counts} />
