@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PlusIcon } from "lucide-react";
+import { CreditCardIcon, PlusIcon } from "lucide-react";
 
 import { JobPostsTable } from "@/components/recruiter/JobPostsTable";
 import {
@@ -47,13 +47,23 @@ const ManageJobsPage = async () => {
           </p>
         </div>
 
-        <Link
-          href="/dashboard/recruiter/manage-jobs/new"
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-[#5b5bd6] px-4 text-sm font-medium text-white shadow-[0_8px_24px_-8px_rgba(91,91,214,0.9)] transition-colors hover:bg-[#4b4bc0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5b5bd6]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0E11]"
-        >
-          <PlusIcon aria-hidden className="size-4" />
-          New Job Post
-        </Link>
+        <div className="flex shrink-0 items-center gap-2 self-start">
+          <Link
+            href="/checkout"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-white/12 bg-white/5 px-4 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          >
+            <CreditCardIcon aria-hidden className="size-4" />
+            Buy job posts
+          </Link>
+
+          <Link
+            href="/dashboard/recruiter/manage-jobs/new"
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-[#5b5bd6] px-4 text-sm font-medium text-white shadow-[0_8px_24px_-8px_rgba(91,91,214,0.9)] transition-colors hover:bg-[#4b4bc0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5b5bd6]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0E0E11]"
+          >
+            <PlusIcon aria-hidden className="size-4" />
+            New Job Post
+          </Link>
+        </div>
       </div>
 
       <JobPostsTable jobs={jobs} />

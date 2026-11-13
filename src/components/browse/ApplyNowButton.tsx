@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "../ui/toast";
 import { postApplication } from "@/lib/actions/applications";
+import { getApplicationCount } from "@/lib/api/applications";
 
 const ApplyNowButton = ({ job }: { job: Job }) => {
   const [open, setOpen] = useState(false);
@@ -31,29 +32,39 @@ const ApplyNowButton = ({ job }: { job: Job }) => {
       router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`);
       return;
     } else if (user.role === "seeker") {
-      const application = {
-        jobId: job._id,
-        userId: user.id,
-        email: user.email,
-        jobTitle: job.title,
-        companyName: job.company,
-        jobType: job.jobType,
-        isRemote: job.isRemote,
-        location: job.location,
-        minSalary: job.minSalary,
-        maxSalary: job.maxSalary,
-        salaryFrequency: job.frequency,
-        deadline: job.deadline,
-      };
-
-      const data = await postApplication(application);
-
-      if (data.insertedId) {
+      const { count } = await getApplicationCount(user.id);
+      if (count > 3) {
+        router.push("/checkout");
         toast.add({
-          type: "success",
-          description: "Application submitted successfully.",
+          type: "error",
+          description: "A Free User can apply up to 3 jobs",
         });
-        setOpen(false);
+        return;
+      } else {
+        const application = {
+          jobId: job._id,
+          userId: user.id,
+          email: user.email,
+          jobTitle: job.title,
+          companyName: job.company,
+          jobType: job.jobType,
+          isRemote: job.isRemote,
+          location: job.location,
+          minSalary: job.minSalary,
+          maxSalary: job.maxSalary,
+          salaryFrequency: job.frequency,
+          deadline: job.deadline,
+        };
+
+        const data = await postApplication(application);
+
+        if (data.insertedId) {
+          toast.add({
+            type: "success",
+            description: "Application submitted successfully.",
+          });
+          setOpen(false);
+        }
       }
     } else {
       toast.add({

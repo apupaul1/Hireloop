@@ -302,7 +302,7 @@ export default function JobDetails({ job }: { job: Job }) {
               <Bookmark aria-hidden strokeWidth={1.8} className="size-4" />
             </Button>
 
-            <ApplyNowButton job={job}/>
+            <ApplyNowButton job={job} />
           </div>
         </div>
       </article>
