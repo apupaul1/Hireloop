@@ -52,3 +52,15 @@ export const getSingleJob = async (id: string): Promise<Job | null> => {
   const jobs = await getJobs();
   return jobs.find((job) => job._id === id) ?? null;
 };
+
+export const getJobsCount = async (recruiterEmail: string) => {
+  const res = await fetch(
+    `${BASE_URL}/jobs/count?recruiterEmail=${recruiterEmail}`,
+  );
+
+  if (!res.ok) {
+    return [];
+  }
+
+  return res.json();
+};

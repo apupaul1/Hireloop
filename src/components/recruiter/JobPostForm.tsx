@@ -21,7 +21,9 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { postJob, updateJob } from "@/lib/actions/jobs";
-import type { Job } from "@/lib/api/jobs";
+import { getJobsCount, type Job } from "@/lib/api/jobs";
+import { useSession } from "@/lib/auth-client";
+import { getUserPremium } from "@/lib/api/users";
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
 type JobType = (typeof JOB_TYPES)[number];
@@ -53,6 +55,7 @@ type JobFormValues = {
   frequency: Frequency;
   responsibilities: string;
   qualifications: string;
+  recruiterEmail?: string;
 };
 
 type JobFormErrors = Partial<Record<keyof JobFormValues, string>>;
@@ -189,6 +192,7 @@ type JobPostFormProps = {
 
 export default function JobPostForm({ job }: JobPostFormProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const isEdit = Boolean(job);
   const [values, setValues] = useState<JobFormValues>(() =>
     job ? valuesFromJob(job) : initialValues,
@@ -258,15 +262,29 @@ export default function JobPostForm({ job }: JobPostFormProps) {
         return;
       }
 
-      const data = await postJob(values);
+      const isPremium = await getUserPremium(session?.user.id as string);
+      const { count } = await getJobsCount(session?.user.email as string);
 
-      if (data.insertedId) {
+      if (!isPremium.premium && count > 5) {
+        router.push("/checkout");
         toast.add({
-          type: "success",
-          description: "Job published successfully.",
+          type: "error",
+          description: "A Free Recruiter can apply up to 5 jobs",
         });
-        setValues(initialValues);
-        setErrors({});
+        return;
+      } else {
+        values.recruiterEmail = session?.user.email;
+
+        const data = await postJob(values);
+
+        if (data.insertedId) {
+          toast.add({
+            type: "success",
+            description: "Job published successfully.",
+          });
+          setValues(initialValues);
+          setErrors({});
+        }
       }
     } finally {
       setIsSubmitting(false);
@@ -457,8 +475,7 @@ export default function JobPostForm({ job }: JobPostFormProps) {
 
           <Field data-invalid={!!errors.deadline}>
             <FieldLabel htmlFor="job-deadline">
-              Application Deadline{isEdit ? " (deadline)" : ""}{" "}
-              <RequiredMark />
+              Application Deadline{isEdit ? " (deadline)" : ""} <RequiredMark />
             </FieldLabel>
             <div className="relative">
               <CalendarDays

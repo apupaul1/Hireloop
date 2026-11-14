@@ -19,6 +19,7 @@ import { useState } from "react";
 import { toast } from "../ui/toast";
 import { postApplication } from "@/lib/actions/applications";
 import { getApplicationCount } from "@/lib/api/applications";
+import { getUserPremium } from "@/lib/api/users";
 
 const ApplyNowButton = ({ job }: { job: Job }) => {
   const [open, setOpen] = useState(false);
@@ -32,8 +33,12 @@ const ApplyNowButton = ({ job }: { job: Job }) => {
       router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`);
       return;
     } else if (user.role === "seeker") {
+      const isPremium = await getUserPremium(user.id);
       const { count } = await getApplicationCount(user.id);
-      if (count > 3) {
+
+      if (!isPremium.premium && count > 3) {
+        setOpen(false);
+
         router.push("/checkout");
         toast.add({
           type: "error",

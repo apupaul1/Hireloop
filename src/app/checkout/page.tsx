@@ -12,7 +12,11 @@ export const metadata: Metadata = {
     "Buy the one-time pass that matches your HireLoop account: an application pass for job seekers or a job post pack for recruiters.",
 };
 
-const CheckoutPage = async () => {
+const CheckoutPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ canceled?: string }>;
+}) => {
   const session = await getSession();
 
   if (!session?.user) {
@@ -27,7 +31,7 @@ const CheckoutPage = async () => {
     <div className="relative isolate min-h-svh bg-[#f5f5f7] text-neutral-900 dark:bg-[#050505] dark:text-white">
       <Navbar />
 
-      <CheckoutView planId={planId} />
+      <CheckoutView planId={planId} searchParams={searchParams} />
     </div>
   );
 };
