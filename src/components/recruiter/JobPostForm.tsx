@@ -21,7 +21,8 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { postJob, updateJob } from "@/lib/actions/jobs";
-import { getJobsCount, type Job } from "@/lib/api/jobs";
+import { getJobsCount } from "@/lib/api/jobs";
+import type { Job } from "@/types";
 import { useSession } from "@/lib/auth-client";
 import { getUserPremium } from "@/lib/api/users";
 

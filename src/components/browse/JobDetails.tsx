@@ -14,10 +14,13 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import type { Job } from "@/lib/api/jobs";
-import { formatCompensation, toBulletList } from "@/lib/job-format";
-import { CATEGORY_ICONS } from "@/lib/job-icons";
-import { cn } from "@/lib/utils";
+import type { Job } from "@/types";
+import {
+  CATEGORY_ICONS,
+  cn,
+  formatCompensation,
+  toBulletList,
+} from "@/utils";
 import ApplyNowButton from "./ApplyNowButton";
 
 const BENEFITS: { icon: LucideIcon; label: string }[] = [

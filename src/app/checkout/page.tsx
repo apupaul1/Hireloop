@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { CheckoutView } from "@/components/checkout/CheckoutView";
 import Navbar from "@/components/shared/Navbar";
 import { getSession } from "@/lib/core/server";
-import type { CheckoutPlanId } from "@/lib/checkout";
+import type { CheckoutPlanId } from "@/types";
 
 export const metadata: Metadata = {
   title: "Checkout — HireLoop",

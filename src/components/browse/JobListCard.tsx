@@ -9,9 +9,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { Job } from "@/lib/api/jobs";
-import { CATEGORY_ICONS } from "@/lib/job-icons";
-import { formatCompensation } from "@/lib/job-format";
+import type { Job } from "@/types";
+import { CATEGORY_ICONS, formatCompensation } from "@/utils";
 import Link from "next/link";
 
 function MetaChip({

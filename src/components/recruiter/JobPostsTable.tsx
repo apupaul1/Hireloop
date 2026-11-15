@@ -14,7 +14,8 @@ import {
 import { cn } from "cn";
 
 import { JobRowActions } from "@/components/recruiter/JobRowActions";
-import type { Job } from "@/lib/api/jobs";
+import type { Job } from "@/types";
+import Link from "next/link";
 
 type CategoryStyle = {
   label: string;
@@ -89,7 +90,9 @@ const FREQUENCY_SUFFIX: Record<string, string> = {
   "per year": "/ yr",
 };
 
+
 const numberFormatter = new Intl.NumberFormat("en-US", {
+  notation: "compact",
   maximumFractionDigits: 2,
 });
 
@@ -106,7 +109,9 @@ function formatSalary(value: string) {
 function formatCompensation(job: Job) {
   const min = formatSalary(job.minSalary);
   const max = formatSalary(job.maxSalary);
-  const suffix = FREQUENCY_SUFFIX[job.frequency] ?? job.frequency;
+
+  const suffix =
+    FREQUENCY_SUFFIX[job.frequency] ?? job.frequency;
 
   let range: string | null = null;
 
@@ -122,6 +127,7 @@ function formatCompensation(job: Job) {
 
   return suffix ? `${range} ${suffix}` : range;
 }
+
 
 function formatDeadline(deadline: string) {
   const date = new Date(deadline);
@@ -367,7 +373,7 @@ export function JobPostsTable({ jobs }: { jobs: Job[] }) {
                     </td>
 
                     <td className={bodyCellClassName}>
-                      <span
+                      <Link href={`manage-jobs/${job._id}/applicants`}
                         className="inline-flex items-center gap-1.5 text-white/55"
                         title={
                           job.applicants == null
@@ -386,7 +392,7 @@ export function JobPostsTable({ jobs }: { jobs: Job[] }) {
                                 ? "Candidate"
                                 : "Candidates"
                             }`}
-                      </span>
+                      </Link>
                     </td>
 
                     <td className={bodyCellClassName}>

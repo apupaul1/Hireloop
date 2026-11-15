@@ -1,4 +1,4 @@
-import type { Job } from "@/lib/api/jobs";
+import type { Job } from "@/types";
 
 const FREQUENCY_SUFFIX: Record<string, string> = {
   "per hour": "/ hr",

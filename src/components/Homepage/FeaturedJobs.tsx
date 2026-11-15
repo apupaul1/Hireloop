@@ -1,15 +1,8 @@
 import { SectionBadge } from "@/components/shared/SectionBadge";
 import JobCard from "../shared/JobCard";
+import type { FeaturedJob } from "@/types";
 
-export type Job = {
-  title: string;
-  description: string;
-  location: string;
-  workMode: string;
-  salary: string;
-};
-
-const JOBS: Job[] = [
+const JOBS: FeaturedJob[] = [
   {
     title: "Frontend Developer",
     description:

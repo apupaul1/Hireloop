@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 
 import { SuccessView } from "@/components/checkout/SuccessView";
 import { paymentVerification } from "@/lib/actions/payments";
-import { CHECKOUT_PLANS, type CheckoutPlanId } from "@/lib/checkout";
+import { CHECKOUT_PLANS } from "@/lib/checkout";
+import type { CheckoutPlanId } from "@/types";
 import { getSession } from "@/lib/core/server";
 import { stripe } from "@/lib/stripe";
 import Navbar from "@/components/shared/Navbar";

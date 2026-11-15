@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Job } from "@/lib/api/jobs";
+import type { Job } from "@/types";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

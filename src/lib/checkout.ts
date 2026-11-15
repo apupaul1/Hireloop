@@ -1,17 +1,4 @@
-export type CheckoutPlanId = "seeker" | "recruiter";
-
-export type CheckoutPlan = {
-  id: CheckoutPlanId;
-  audience: string;
-  name: string;
-  tagline: string;
-  price: number;
-  perks: string[];
-  successHref: string;
-  successLabel: string;
-  dashboardHref: string;
-  nextStep: string;
-};
+import type { CheckoutPlan, CheckoutPlanId } from "@/types";
 
 export const CHECKOUT_PLANS: Record<CheckoutPlanId, CheckoutPlan> = {
   seeker: {
@@ -53,10 +40,3 @@ export const CHECKOUT_PLANS: Record<CheckoutPlanId, CheckoutPlan> = {
       "Your 5 extra job posts are ready to use from your Manage Jobs page.",
   },
 };
-
-export const formatPrice = (amount: number) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-  }).format(amount);

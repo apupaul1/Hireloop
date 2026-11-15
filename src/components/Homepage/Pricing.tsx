@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { SectionBadge } from "@/components/shared/SectionBadge";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 type Billing = "monthly" | "yearly";
 

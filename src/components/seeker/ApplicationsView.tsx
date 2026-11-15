@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 
-import type { IApplications } from "@/lib/api/applications";
+import type { Application } from "@/types";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 8;
 const ARCHIVED_STATUSES = new Set(["archived", "withdrawn"]);
 
 type Tab = "active" | "archived";
@@ -181,9 +181,7 @@ function formatAppliedAt(value: string) {
     return "—";
   }
 
-  const minutes = Math.floor(
-    Math.max(0, Date.now() - date.getTime()) / 60_000,
-  );
+  const minutes = Math.floor(Math.max(0, Date.now() - date.getTime()) / 60_000);
 
   if (minutes < 1) {
     return "Just now";
@@ -220,7 +218,7 @@ function formatAppliedAt(value: string) {
   return pluralize(Math.floor(days / 365), "year");
 }
 
-function formatWorkplace(application: IApplications) {
+function formatWorkplace(application: Application) {
   const arrangement = application.isRemote
     ? "Remote"
     : application.location || "On-site";
@@ -260,7 +258,7 @@ function escapeHtml(value: string) {
 }
 
 type ApplicationsViewProps = {
-  applications: IApplications[];
+  applications: Application[];
 };
 
 export function ApplicationsView({ applications }: ApplicationsViewProps) {
@@ -622,8 +620,9 @@ export function ApplicationsView({ applications }: ApplicationsViewProps) {
 
         <div className="flex flex-col gap-3 border-t border-white/8 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[12px] text-white/40">
-            Showing {firstVisible}-{lastVisible} of {filteredApplications.length}{" "}
-            application{filteredApplications.length === 1 ? "" : "s"}
+            Showing {firstVisible}-{lastVisible} of{" "}
+            {filteredApplications.length} application
+            {filteredApplications.length === 1 ? "" : "s"}
           </p>
 
           <div className="flex items-center gap-1.5">

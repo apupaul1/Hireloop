@@ -4,7 +4,7 @@ import {
   MapPin,
   MonitorSmartphone,
 } from "lucide-react";
-import { Job } from "../Homepage/FeaturedJobs";
+import type { FeaturedJob } from "@/types";
 import Link from "next/link";
 
 export default function JobCard({
@@ -13,7 +13,7 @@ export default function JobCard({
   location,
   workMode,
   salary,
-}: Job) {
+}: FeaturedJob) {
   const META_ICON = (
     <span className="shrink-0">
       <MapPin aria-hidden strokeWidth={1.8} className="size-3.5 text-[#F7C2FF]" />

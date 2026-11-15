@@ -10,11 +10,9 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-  CHECKOUT_PLANS,
-  formatPrice,
-  type CheckoutPlanId,
-} from "@/lib/checkout";
+import { CHECKOUT_PLANS } from "@/lib/checkout";
+import type { CheckoutPlanId } from "@/types";
+import { formatPrice } from "@/utils";
 
 const PLAN_ICONS = {
   seeker: UserRound,

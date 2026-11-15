@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "next/navigation";
 
+import type { FilterCounts } from "@/types";
+
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
 
 const JOB_CATEGORIES = [
@@ -25,13 +27,6 @@ const WORK_MODES = [
   { label: "Remote", value: "remote" },
   { label: "On-site", value: "on-site" },
 ] as const;
-
-export type FilterCounts = {
-  jobTypes: Record<string, number>;
-  categories: Record<string, number>;
-  remote: number;
-  onSite: number;
-};
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 

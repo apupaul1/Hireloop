@@ -11,9 +11,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { getJobs } from "@/lib/api/jobs";
+import { getSession } from "@/lib/core/server";
 
 const ManageJobsPage = async () => {
-  const jobs = await getJobs();
+  const session = await getSession();
+  const jobs = await getJobs(`recruiterEmail=${session?.user.email}`);
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden pb-10">

@@ -1,10 +1,11 @@
 import { Briefcase, Search } from "lucide-react";
 
-import JobFilters, { type FilterCounts } from "@/components/browse/JobFilters";
+import JobFilters from "@/components/browse/JobFilters";
 import JobListCard from "@/components/browse/JobListCard";
 import Navbar from "@/components/shared/Navbar";
 import { Card } from "@/components/ui/card";
-import { getJobs, type Job } from "@/lib/api/jobs";
+import { getJobs } from "@/lib/api/jobs";
+import type { FilterCounts, Job } from "@/types";
 import SearchBar from "@/components/browse/SearchBar";
 import SortJobsMenu from "@/components/browse/SortJobsMenu";
 

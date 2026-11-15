@@ -14,6 +14,7 @@ export default function HeroBackground() {
             alt=""
             fill
             sizes="90vw"
+            loading="eager"
             className="object-cover opacity-40 dark:opacity-100"
           />
         </div>

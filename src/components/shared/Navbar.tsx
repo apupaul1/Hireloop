@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 import { Logo } from "@/components/shared/Logo";
 import { MobileNav } from "@/components/shared/MobileNav";

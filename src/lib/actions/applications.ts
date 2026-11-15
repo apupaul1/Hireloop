@@ -16,3 +16,18 @@ export const postApplication = async (data: ApplicationPayload) => {
 
   return res.json();
 };
+
+export const updateApplicationStatus = async (
+  applicationId: string,
+  status: string,
+) => {
+  const res = await fetch(`${BASE_URL}/applications/${applicationId}`, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  return res.json();
+};
